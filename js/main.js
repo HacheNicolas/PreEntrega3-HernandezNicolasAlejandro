@@ -1,25 +1,61 @@
-//Declaración e inicialización de funciones flecha para mostrar alertas por pantalla y mensajes por consola.
-const alerta = (mensaje) => { alert(mensaje); }
-const consola = (mensaje) => { console.log(mensaje); }
+//Función flecha que busca elementos en el local storage y, de haber existencia, los inserta en el documento HTML.
+const renderAlimentos = () => {
+    const alimentosLS = recuperarAlimentos();
+    let tabla = "";
 
-//Clase Articulo con su constructor, atributos y métodos.
-class Articulo{
-    constructor(id,nombre,cantidad){
-        this.id = id;
-        this.nombre = nombre;
-        this.cantidad = cantidad;
-        this.caducidad = "No caduca";
+    for (let alimento of alimentosLS) {
+        //Se verifica el estado del alimento.
+        if(alimento.estado == "Caducado"){
+            tabla += `<div class="row bg-danger-subtle p-2 justify-content-between align-items-center">
+                        <div class="col-1">
+                            <p class="mb-0">${alimento.id}</p>
+                        </div>
+                        <div class="col-1">
+                            <p class="mb-0">${alimento.nombre}</p>
+                        </div>
+                        <div class="col-1">
+                            <p class="mb-0">${alimento.cantidad}</p>
+                        </div>
+                        <div class="col-1">
+                            <p class="mb-0">${alimento.caducidad}</p>
+                        </div>
+                        <div class="col-1">
+                            <p class="mb-0">${alimento.estado}</p>
+                        </div>
+                        <div class="col-1">
+                            <p class="mb-0">${alimento.diasCaducidad}</p>
+                        </div>
+                    </div>`;
+        } else {
+            tabla += `<div class="row bg-success-subtle p-2 justify-content-between align-items-center">
+                        <div class="col-1">
+                            <p class="mb-0">${alimento.id}</p>
+                        </div>
+                        <div class="col-1">
+                            <p class="mb-0">${alimento.nombre}</p>
+                        </div>
+                        <div class="col-1">
+                            <p class="mb-0">${alimento.cantidad}</p>
+                        </div>
+                        <div class="col-1">
+                            <p class="mb-0">${alimento.caducidad}</p>
+                        </div>
+                        <div class="col-1">
+                            <p class="mb-0">${alimento.estado}</p>
+                        </div>
+                        <div class="col-1">
+                            <p class="mb-0">${alimento.diasCaducidad}</p>
+                        </div>
+                    </div>`;
+        }
+        
     }
-    agregarFechaCaducidad(fecha){
-        this.caducidad = fecha;
-    }
-    actualizarID(valor){
-        this.id = valor;
-    }
+
+    document.getElementById("tabla").innerHTML = tabla;
 }
 
-//Array de articulos.
-const stock = [];
+//Se llama a la función anterior cada vez que se ingresa al sitio web.
+renderAlimentos();
 
 //Función para realizar la creación de objetos Articulo y la carga de los mismos en el array stock.
 function cargarArticulos(){
@@ -47,7 +83,7 @@ function cargarArticulos(){
 
         let esPerecedero = confirm("¿es una artículo perecedero?");
 
-        //Si el artículo es perecedero se le agrega una fecha de vencimiento.
+        //Si el artículo es perecedero se le agrega una fecha de caducidad.
         if(!esPerecedero){
             consola(articulo);
             //Se agrega el artículo al array stock.
@@ -138,3 +174,34 @@ function gestionarStock(){
         }
     }while(opcionIngresada != 0);
 }
+
+function limpiarInputAlimento(){
+    document.getElementById("inputNombre").value = "";
+    document.getElementById("inputCantidad").value = "";
+    document.getElementById("inputCaducidad").value = "";
+}
+
+function limpiarInputAlimentos(){
+    document.getElementById("inputCantidadAlimentos").value = "";
+}
+
+function eliminarTabla(){
+    let tabla = "";
+    document.getElementById("tabla").innerHTML = tabla;
+    localStorage.removeItem("stock");
+}
+
+//Agregar alimento individual.
+document.getElementById("btnAgregarAlimento").addEventListener("click", creacionAlimento);
+
+//Limpia los campos para ingresar un alimento.
+document.getElementById("btnLimpiarAlimento").addEventListener("click", limpiarInputAlimento);
+
+//Agregar alimentos en cantidad.
+document.getElementById("btnAgregarAlimentos").addEventListener("click", creacionAlimentos);
+
+//Limpia el campo para ingresar la cantidad de alimentos a generar.
+document.getElementById("btnLimpiarAlimentos").addEventListener("click", limpiarInputAlimentos);
+
+//Eliminar tabla y los datos almacenados en el Local Storage.
+document.getElementById("btnEliminarTabla").addEventListener("click", eliminarTabla);
