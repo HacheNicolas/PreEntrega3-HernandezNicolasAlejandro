@@ -1,4 +1,4 @@
-const alimentos = ["manzana","pera","banana","naranja","pomelo","pollo","cerdo","pavo","atún","salmón","huevo","yogur","queso","leche","brócoli","coliflor","espinaca","berenjena","zanahoria","zapallo,","papa","tomate","batata"];
+const alimentos = ["manzana","pera","banana","naranja","pomelo","pollo","cerdo","pavo","atún","salmón","huevo","yogur","queso","leche","brócoli","coliflor","espinaca","berenjena","zanahoria","zapallo","papa","tomate","batata"];
 
 //Cantidad de milisegundos en un año (para el cálculo de las fechas).
 const milisegundosAño = 86400000;
@@ -15,11 +15,7 @@ class Alimento{
         this.caducidad = caducidad;
         this.estado = null;
         this.diasCaducidad = null;
-        //this.caducidad = "No caduca";
     }
-    // agregarFechaCaducidad(fecha){
-    //     this.caducidad = fecha;
-    // }
     actualizarID(valor){
         this.id = valor;
     }
@@ -27,11 +23,8 @@ class Alimento{
     calcularEstado(fechaCaducidadMS,fechaActualMS){
         let fechaCaducidad = (fechaCaducidadMS / milisegundosAño);
         let fechaActual = (fechaActualMS / milisegundosAño);
-        if(fechaCaducidad > fechaActual){
-            this.estado = "En fecha";
-        } else {
-            this.estado = "Caducado";
-        }
+        //Se utiliza la simplificación del if else.
+        (fechaCaducidad > fechaActual) ? (this.estado = "En fecha") : (this.estado = "Caducado");
     }
     //Método que calcula la cantidad de días faltantes hasta la fecha de caducidad del alimento.
     calcularDiasCaducidad(fechaCaducidad,fechaActual,milisegundosAño){
@@ -47,6 +40,7 @@ const guardarAlimentos = (stock) => {
 
 //Función flecha para recuperar los alimentos del stock guardado en el Local Storage.
 const recuperarAlimentos = () => {
+    //Se utiliza el operador lógico OR para simplificar el proceso.
     return JSON.parse(localStorage.getItem("stock")) || [];
 }
 
@@ -106,47 +100,49 @@ function creacionAlimentos(){
     let tabla = "";
 
     for (let alimento of stock) {
+        //Desestructuración de los atributos del objeto alimento.
+        const {id,nombre,cantidad,caducidad,estado,diasCaducidad} = alimento;
         //Se verifica el estado del alimento.
-        if(alimento.estado == "Caducado"){
+        if(estado == "Caducado"){
             tabla += `<div class="row bg-danger-subtle p-2 justify-content-between align-items-center">
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.id}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${id}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.nombre}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${nombre}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.cantidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${cantidad}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.caducidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${caducidad}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.estado}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${estado}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.diasCaducidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${diasCaducidad}</p>
                         </div>
                     </div>`;
         } else {
             tabla += `<div class="row bg-success-subtle p-2 justify-content-between align-items-center">
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.id}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${id}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.nombre}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${nombre}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.cantidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${cantidad}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.caducidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${caducidad}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.estado}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${estado}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.diasCaducidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${diasCaducidad}</p>
                         </div>
                     </div>`;
         }
@@ -170,11 +166,12 @@ function creacionAlimento(){
     let idAlimento = (stock.length + 1);
     let nombreAlimento = document.getElementById("inputNombre").value;
     let cantidadAlimento = document.getElementById("inputCantidad").value;
-    let caducidadAlimento = document.getElementById("inputCaducidad").value;
+    let caducidadIngresada = document.getElementById("inputCaducidad").value;
+    let caducidadAlimento = new Date(caducidadIngresada).toLocaleDateString();
     let alimento = new Alimento(idAlimento,nombreAlimento,cantidadAlimento,caducidadAlimento);
     
     //Se calcula el estado del alimento.
-    let caducidad = new Date(caducidadAlimento);
+    let caducidad = new Date(caducidadIngresada);
     let caducidadAlimentoMS = caducidad.getTime();
     alimento.calcularEstado(caducidadAlimentoMS,fAms);
     //Se calcula la cantidad de días faltantes hasta la caducidad del alimento.
@@ -187,47 +184,49 @@ function creacionAlimento(){
     let tabla = "";
 
     for (let alimento of stock) {
+        //Desestructuración de los atributos del objeto alimento.
+        const {id,nombre,cantidad,caducidad,estado,diasCaducidad} = alimento;
         //Se verifica el estado del alimento.
-        if(alimento.estado == "Caducado"){
+        if(estado == "Caducado"){
             tabla += `<div class="row bg-danger-subtle p-2 justify-content-between align-items-center">
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.id}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${id}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.nombre}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${nombre}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.cantidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${cantidad}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.caducidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${caducidad}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.estado}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${estado}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.diasCaducidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${diasCaducidad}</p>
                         </div>
                     </div>`;
         } else {
             tabla += `<div class="row bg-success-subtle p-2 justify-content-between align-items-center">
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.id}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${id}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.nombre}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${nombre}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.cantidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${cantidad}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.caducidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${caducidad}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.estado}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${estado}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.diasCaducidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${diasCaducidad}</p>
                         </div>
                     </div>`;
         }

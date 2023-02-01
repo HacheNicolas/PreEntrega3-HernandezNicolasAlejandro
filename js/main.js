@@ -4,47 +4,49 @@ const renderAlimentos = () => {
     let tabla = "";
 
     for (let alimento of alimentosLS) {
+        //Desestructuración de los atributos del objeto alimento.
+        const {id,nombre,cantidad,caducidad,estado,diasCaducidad} = alimento;
         //Se verifica el estado del alimento.
-        if(alimento.estado == "Caducado"){
+        if(estado == "Caducado"){
             tabla += `<div class="row bg-danger-subtle p-2 justify-content-between align-items-center">
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.id}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${id}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.nombre}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${nombre}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.cantidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${cantidad}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.caducidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${caducidad}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.estado}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${estado}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.diasCaducidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${diasCaducidad}</p>
                         </div>
                     </div>`;
         } else {
             tabla += `<div class="row bg-success-subtle p-2 justify-content-between align-items-center">
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.id}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${id}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.nombre}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${nombre}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.cantidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${cantidad}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.caducidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${caducidad}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.estado}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${estado}</p>
                         </div>
-                        <div class="col-1">
-                            <p class="mb-0">${alimento.diasCaducidad}</p>
+                        <div class="col-2">
+                            <p class="mb-0">${diasCaducidad}</p>
                         </div>
                     </div>`;
         }
@@ -57,148 +59,184 @@ const renderAlimentos = () => {
 //Se llama a la función anterior cada vez que se ingresa al sitio web.
 renderAlimentos();
 
-//Función para realizar la creación de objetos Articulo y la carga de los mismos en el array stock.
-function cargarArticulos(){
+//Validaciones de los formularios. (No se utiliza sintaxis simplificada por la imposibilidad de usar return).
 
-    //Variable para detener la iteración del do-while.
-    let cargaArticulo = true;
-
-    do{
-        let idArticulo = (stock.length + 1);
-        let nombreArticulo = prompt("Ingrese el nombre del artículo");
-        let cantidadArticulo;
-        //Se verifica que la cantidad del artículo a ingresar sea un número positivo.
-        do{
-            cantidadArticulo = parseInt(prompt("Ingrese la cantidad del artículo"));
-            if(!Number.isInteger(cantidadArticulo)){
-                alerta("Por favor, ingrese solo números.");
-            }
-            if(cantidadArticulo < 0){
-                alerta("Por favor, ingrese un número mayor a 0.");
-            }
-        }while((!Number.isInteger(cantidadArticulo)) || (cantidadArticulo < 0));
-        
-        //Se crea el artículo con los parámetros ingresados
-        let articulo = new Articulo(idArticulo,nombreArticulo,cantidadArticulo);
-
-        let esPerecedero = confirm("¿es una artículo perecedero?");
-
-        //Si el artículo es perecedero se le agrega una fecha de caducidad.
-        if(!esPerecedero){
-            consola(articulo);
-            //Se agrega el artículo al array stock.
-            stock.push(articulo);
-            consola(stock);
-        } else {
-            let caducidadArticulo = prompt("Ingrese la fecha de caducidad del artículo");
-            articulo.agregarFechaCaducidad(caducidadArticulo);
-            consola(articulo);
-            //Se agrega el artículo al array stock.
-            stock.push(articulo);
-            consola(stock);
-        }
-
-        //Se consulta si se desea agregar otro artículo.
-        cargaArticulo = confirm("¿Desea agregar otro artículo?");
-
-    }while(cargaArticulo);
+//Función para verificar que la completitud de los campos hayan sido llenados.
+function datosFaltantes(input) {
+    Swal.fire({
+        icon: 'error',
+        title: '¡Error!',
+        text: 'Datos faltantes en el campo: ' + input
+    })
 }
 
-//Función que muestra los articulos cargados en el array de articulos.
-function mostrarArticulos(){
-    //Variable que almacena los artículos en forma de String para mostrarlos por pantalla.
-    let contenidoStock = "";
+//Función para verificar que los datos ingresados en ciertos campos son válidos.
+function datosInvalidos(input) {
+    Swal.fire({
+      icon: 'error',
+      title: '¡Error!',
+      text: 'Datos ingresados inválidos en el campo: ' + input
+    })
+}
 
-    //Se recorre el array stock concatenando los atributos de cada artículo con la variable String a mostrar.
-    for (let articulo of stock){
-        contenidoStock += articulo.id + " - " + articulo.nombre + " - cantidad: (" + articulo.cantidad + ") - caducidad: (" + articulo.caducidad + ")\n";
+//Función que valida los datos ingresados en los campos para ingresar un alimento de forma individual.
+function validarCargaIndividual(){
+    let nombre = document.getElementById("inputNombre").value;
+    let cantidad = document.getElementById("inputCantidad").value;
+    let caducidad = document.getElementById("inputCaducidad").value;
+
+    //Validaciones para el campo "nombre".
+    if (nombre.trim() == 0){
+        datosFaltantes("Nombre");
+        return false;
+    } 
+
+    //Validaciones para el campo "cantidad".
+    if (cantidad.trim() == 0){
+        datosFaltantes("Cantidad");
+        return false;
+    } else if (!Number.isInteger(parseInt(cantidad)) || cantidad < 0){
+        datosInvalidos("Cantidad");
+        return false;
     }
-    consola(contenidoStock);
-    return contenidoStock;
-}
 
-//Función de orden superior para buscar artículos por ID.
-function buscarArticulo(id){
-    return (stock.find(articulo => articulo.id === id) || null);
-}
+    //Validaciones para el campo "caducidad".
+    if (caducidad.trim() == 0){
+        datosFaltantes("Caducidad");
+        return false;
+    }
 
-//Función para eliminar un artículo del array stock.
-function eliminarArticulo(){
-
-    //Variable para detener la iteración del do-while.
-    let eliminarArticulo = true;
-
-    do{
-        //Se muestran los artículos por pantalla y se solicita el ID del artículo a eliminar.
-        let idArticulo = parseInt(prompt(mostrarArticulos() + "Ingrese el ID del artículo a eliminar del stock"));
-        let articulo = buscarArticulo(idArticulo);
-        //Si el artículo con el ID ingresado se encuentra en el stock se lo elimina.
-        if (articulo != null){
-            stock.splice(((articulo.id) - 1),1);
-            //Se actualiza el ID de los demas artículos.
-            for (let i = 0; i < stock.length; i++){
-                stock[i].actualizarID(i+1);
-            }
+    Swal.fire({
+        title: '¿Desea ingresar este alimento?',
+        text: "Los datos del alimento serán almacenados en una LocalStorage.",
+        icon: 'warning',
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Aceptar'
+    }).then((resultado) => {
+        if (resultado.isConfirmed) {
+            //Se realiza la creación del alimento por medio de la función flecha instanciada en el archivo: "alimentos.js";
+            creacionAlimento();
+            Swal.fire(
+                '¡Almacenado!',
+                'El alimento se almacenó correctamente.',
+                'success'
+            )
         } else {
-            alerta("No existe el artículo con el ID: " + idArticulo);
+            Swal.fire(
+                '¡No Almacenado!',
+                'El alimento no fué almacenado.',
+                'error'
+            )
         }
-
-        eliminarArticulo = confirm("¿Desea eliminar otro artículo?");
-    } while(eliminarArticulo);
-    
+    })
 }
 
-//Función principal que muestra el menú de opciones.
-function gestionarStock(){
-    let opcionIngresada = 0;
+//Función que valida los datos ingresados en el campo para ingresar alimentos de forma masiva.
+function validarCargaAutomatica(){
+    let cantidad = document.getElementById("inputCantidadAlimentos").value;
 
-    //El simulador seguirá iniciado hasta que el usuario ingrese la opción de salir del mismo.
-    do{
-        opcionIngresada = parseInt(prompt("Menú de opciones:\n1. Agregar nuevos artículos al stock\n2. Mostrar artículos del stock\n3. Eliminar artículos del stock\n0. Salir"));
-        switch(opcionIngresada){
-            case 1:
-                cargarArticulos();
-                break;
-            case 2:
-                alerta(mostrarArticulos());
-                break;
-            case 3:
-                eliminarArticulo();
-                break;
-            case 0:
-                alerta("¡Gracias por utilizar el simulador!");
-                break;
-            default:
-                alerta("Opción ingresada incorrecta");
-                break;
+    if (cantidad.trim() == 0){
+        datosFaltantes("Cantidad");
+        return false;
+    } else if (!Number.isInteger(parseInt(cantidad)) || cantidad < 0){
+        datosInvalidos("Cantidad");
+        return false;
+    }
+
+    Swal.fire({
+        title: '¿Desea ingresar ' + (cantidad) + ' alimentos?',
+        text: "Los datos de los alimentos serán almacenados en una LocalStorage.",
+        icon: 'warning',
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Aceptar'
+    }).then((resultado) => {
+        if (resultado.isConfirmed) {
+            //Se realiza la creación de los alimentos por medio de la función flecha instanciada en el archivo: "alimentos.js".
+            creacionAlimentos();
+            Toastify({
+                text: "Se almacenaron " + (cantidad) + " alimentos correctamente.",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                close: false,
+                style: {
+                    background: "green",
+                }
+            }).showToast();
+        } else {
+            Toastify({
+                text: "Los alimentos no fueron almacenados.",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                close: false,
+                style: {
+                    background: "red",
+                }
+            }).showToast();
         }
-    }while(opcionIngresada != 0);
+    })
 }
 
+//Función que limpia los campos para ingresar un alimento de manera individual.
 function limpiarInputAlimento(){
     document.getElementById("inputNombre").value = "";
     document.getElementById("inputCantidad").value = "";
     document.getElementById("inputCaducidad").value = "";
 }
 
+//Función que limpia el campo para ingresar alimentos de manera masiva.
 function limpiarInputAlimentos(){
     document.getElementById("inputCantidadAlimentos").value = "";
 }
 
+//Función que elimina la tabla
 function eliminarTabla(){
-    let tabla = "";
-    document.getElementById("tabla").innerHTML = tabla;
-    localStorage.removeItem("stock");
+    Swal.fire({
+        title: '¿Desea eliminar la tabla?',
+        text: "Se eliminarán todos los alimentos almacenados en el LocalStorage.",
+        icon: 'warning',
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Aceptar'
+    }).then((resultado) => {
+        if (resultado.isConfirmed) {
+            //Se realiza la eliminación de los elementos de la tabla insertados en el archivo HTML y de los alimentos almacenados en el LocalStorage.
+            let tabla = "";
+            document.getElementById("tabla").innerHTML = tabla;
+            localStorage.removeItem("stock");
+            Toastify({
+                text: "La tabla de alimentos se eliminó correctamente.",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                close: false,
+                style: {
+                    background: "red",
+                }
+            }).showToast();
+        }
+    })
 }
 
+//EventListeners de los botones.
+
 //Agregar alimento individual.
-document.getElementById("btnAgregarAlimento").addEventListener("click", creacionAlimento);
+document.getElementById("btnAgregarAlimento").addEventListener("click", validarCargaIndividual);
 
 //Limpia los campos para ingresar un alimento.
 document.getElementById("btnLimpiarAlimento").addEventListener("click", limpiarInputAlimento);
 
 //Agregar alimentos en cantidad.
-document.getElementById("btnAgregarAlimentos").addEventListener("click", creacionAlimentos);
+document.getElementById("btnAgregarAlimentos").addEventListener("click", validarCargaAutomatica);
 
 //Limpia el campo para ingresar la cantidad de alimentos a generar.
 document.getElementById("btnLimpiarAlimentos").addEventListener("click", limpiarInputAlimentos);
